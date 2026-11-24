@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- LAUNCH: remove the next line when the site goes public -->
+<meta name="robots" content="noindex, nofollow">
+<title>Trac3R: Pose-Grounded 3D Object Generative Reconstruction via Point Tracing</title>
+<meta name="description" content="Trac3R reconstructs the complete shape and pose of objects from one image and a partial point cloud, by tracing observed points through 3D generation.">
+<meta property="og:title" content="Trac3R: Pose-Grounded 3D Object Generative Reconstruction via Point Tracing">
+<meta property="og:type" content="website">
+<!-- LAUNCH: og:image needs the full site URL -->
+<meta property="og:image" content="static/video/teaser.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='%23e8681a'/></svg>">
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<header class="wrap">
+  <h1><span class="name">Trac3R</span>Pose-Grounded 3D Object Generative Reconstruction via Point Tracing</h1>
+  <p class="authors"><span>Minghan Zhu<sup>1</sup></span><span>Michael Posa<sup>2</sup></span></p>
+  <p class="affil"><sup>1</sup>University of Michigan &emsp; <sup>2</sup>University of Pennsylvania</p>
+  <!-- LAUNCH: replace each span.btn.off by <a class="btn" href="..."> -->
+  <nav class="links">
+    <span class="btn off">arXiv (soon)</span>
+    <span class="btn off">Code (soon)</span>
+    <a class="btn" href="#video">Video</a>
+    <a class="btn" href="#results">Interactive results</a>
+  </nav>
+</header>
+
+<main>
+<section class="wrap">
+  <video class="media" autoplay muted loop playsinline preload="metadata" poster="static/video/teaser.jpg" src="static/video/teaser.mp4" aria-label="RGB image and depth map in, complete posed 3D shapes out"></video>
+  <p class="tldr">From one image and its depth, Trac3R generates the <b>complete shape</b> of every object and places it at its <b>pose</b>, by tracing observed points through the generation.</p>
+</section>
+
+<section class="wrap text" id="abstract">
+  <h2>Abstract</h2>
+  <p>Estimating the complete geometry and pose of objects from an image is a fundamental capability for 3D scene understanding. Despite significant progress in generative shape reconstruction, the problem of grounding generation in observation for accurate poses remains challenging. We solve this joint shape-and-pose estimation problem by augmenting an image-to-3D object shape generation model to find correspondences between the complete shape and a partial observation, represented as a point cloud from a depth sensor or a depth-prediction neural network, so that the generated shape can be grounded in the observation frame. We amortize the correspondence-finding task into the shape generation process itself, by injecting the conditional point cloud as tracers to the shape latents, and observe where they end up in the fully generated shape. This leads to a simple architecture that is trained with a single shape generation objective, achieving state-of-the-art accuracy and efficiency. We demonstrate the wide applicability of our method on synthetic and real-world object-level and scene-level reconstruction tasks.</p>
+</section>
+
+<section class="wrap" id="results">
+  <h2>Interactive results</h2>
+  <p class="lead">Choose a case, then drag to rotate. The four views move together.</p>
+  <div class="picker" id="picker" role="group" aria-label="Cases"></div>
+  <div class="stage">
+    <figure class="input"><img id="inimg" alt="Input image"><figcaption id="incap"></figcaption>
+      <div class="ctrl">
+        <label><input type="checkbox" id="t-err" checked> Error colour</label>
+        <label><input type="checkbox" id="t-pts" checked> Observed points</label>
+        <button type="button" id="t-reset">Reset view</button>
+      </div>
+      <div class="legend"><span>Distance to the ground-truth surface<br>(% of object size)</span><div class="bar"></div><div class="ends"><span>0</span><span>&ge; 5</span></div>
+      <div><i class="dot"></i> observed points</div></div>
+    </figure>
+    <div class="view" id="view"><canvas id="gl" aria-label="Interactive 3D comparison of SAM 3D, Mira-Scene, ShapeR and Trac3R"></canvas>
+      <div class="tag" data-m="sam3d"></div><div class="tag" data-m="mira"></div>
+      <div class="tag" data-m="shaper"></div><div class="tag ours" data-m="trac3r"></div>
+      <div class="msg" id="msg"></div></div>
+  </div>
+  <p class="note">CD: Chamfer distance between the posed prediction and the ground truth, mean over the objects of the case; lower is better. Time: seconds per object on one RTX PRO 6000 GPU, for shape and pose. Meshes are simplified for the web. Click a view first to zoom with the wheel; on a touch screen, use two fingers.</p>
+</section>
+
+<section class="wrap" id="video">
+  <h2>Video</h2>
+  <!-- LAUNCH: optionally replace by a YouTube embed -->
+  <video class="media" controls playsinline preload="none" poster="static/video/demo.jpg" src="static/video/demo.mp4"></video>
+</section>
+
+<section class="wrap" id="method">
+  <h2>How it works</h2>
+  <video class="media" controls muted loop playsinline preload="none" poster="static/video/method.jpg" src="static/video/method.mp4"></video>
+  <ol class="steps">
+    <li><b>Tokens with positions.</b> A shape is a set of latent tokens, and each token originates from one point on the surface. A light fine-tuning of the shape VAE lets a small head read that point back from the token.</li>
+    <li><b>Tracers.</b> We encode points of the observation as tokens, and add them to the noisy shape tokens during denoising. Each traced token is generated to stand for the same point on the complete shape.</li>
+    <li><b>Pose in closed form.</b> The traced tokens give point correspondences between the generated shape and the observation. A least-squares fit to these pairs is the pose.</li>
+  </ol>
+  <p class="lead">The correspondences come from generating the shape itself: there is no matching module, no pose loss and no correspondence loss.</p>
+  <img class="media plain" src="static/img/method.png" alt="Trac3R method overview: stage 1 trains a position head, stage 2 injects tracers into the diffusion transformer" loading="lazy">
+</section>
+
+<section class="wrap" id="numbers">
+  <h2>Accurate and fast</h2>
+  <div class="two">
+    <img src="static/img/acc_runtime.png" alt="Mean Chamfer distance against runtime per object; Trac3R is at the lower left" loading="lazy">
+    <div>
+      <p>On synthetic objects, Trac3R has both high accuracy and the lowest runtime of the compared methods. Its accuracy changes little when predicted depth replaces ground-truth depth.</p>
+      <p>The same single model also handles real household objects with predicted depth, cluttered tabletops and bins with sensor depth, and indoor and outdoor scenes.</p>
+      <p class="note">Vertical axis: Chamfer distance (CD) of the posed shape in % of the object's longest side, averaged over Toys4K, GSO and OmniObject3D with ground-truth and MoGe-2 depth. Horizontal axis: seconds per object at batch size 1.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="bibtex">
+  <h2>BibTeX</h2>
+  <!-- LAUNCH: add the arXiv id -->
+  <div class="bib"><button type="button" id="copy">Copy</button><pre><code id="bib">@article{zhu2026trac3r,
+  title   = {Trac3R: Pose-Grounded 3D Object Generative Reconstruction via Point Tracing},
+  author  = {Zhu, Minghan and Posa, Michael},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre></div>
+</section>
+</main>
+<footer class="wrap">Images and objects are from HOPE, HANDAL, BlendSwap, GSO, OmniObject3D and Toys4K, and belong to their owners.</footer>
+<script src="static/viewer.js"></script>
+</body>
+</html>
