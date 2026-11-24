@@ -109,7 +109,7 @@ async function load(c) {
   document.querySelectorAll(".tag").forEach(t => {
     const m = c.methods[t.dataset.m], b = document.createElement("b");
     b.textContent = NAME[t.dataset.m];
-    t.replaceChildren(b, `CD ${m.cd.toFixed(1)} ${c.unit} · ${m.sec.toFixed(1)} s`);
+    t.replaceChildren(b, `CD ${m.cd.toFixed(1)} ${c.unit} · ${m.sec.toFixed(1)} s / object`);
   });
   resetView(); msg.textContent = "Loading…";
   try {
