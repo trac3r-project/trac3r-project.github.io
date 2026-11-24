@@ -16,7 +16,7 @@
 </head>
 <body>
 <header class="wrap">
-  <h1><span class="name">Trac3R</span>Pose-Grounded 3D Object Generative Reconstruction via Point Tracing</h1>
+  <h1><img class="name" src="static/img/trac3r.svg" alt="Trac3R" width="1084" height="294">Pose-Grounded 3D Object Generative Reconstruction via Point Tracing</h1>
   <p class="authors"><span>Minghan Zhu<sup>1,2</sup></span><span>Michael Posa<sup>2</sup></span></p>
   <p class="affil"><sup>1</sup>University of Michigan &emsp; <sup>2</sup>University of Pennsylvania</p>
   <!-- LAUNCH: replace each span.btn.off by <a class="btn" href="..."> -->
@@ -30,7 +30,7 @@
 
 <main>
 <section class="wrap">
-  <video class="media" autoplay muted loop playsinline preload="metadata" poster="static/video/teaser.jpg" src="static/video/teaser.mp4" aria-label="RGB image and depth map in, complete posed 3D shapes out"></video>
+  <video class="media" autoplay muted loop playsinline preload="metadata" poster="static/video/teaser.jpg" src="static/video/teaser_logo.mp4" aria-label="RGB image and depth map in, complete posed 3D shapes out"></video>
   <p class="tldr">From one image and its depth, Trac3R generates the <b>complete shape</b> of every object and places it at its <b>pose</b>, by tracing observed points through the generation.</p>
 </section>
 
@@ -79,7 +79,7 @@
     <li><h3>Pose from the traced tokens</h3>
       <p>Each traced token decodes to a point on the generated shape, which corresponds to the observed point of its tracer. The pose is solved with a <b>least-squares fit</b> to these pairs, in closed form.</p></li>
   </ol>
-  <video class="media" controls muted loop playsinline preload="none" poster="static/video/method.jpg" src="static/video/method.mp4"></video>
+  <video class="media" controls muted loop playsinline preload="none" poster="static/video/method.jpg" src="static/video/method_logo_trails_seek.mp4"></video>
   <img class="media plain" src="static/img/method.png" alt="Trac3R method overview: stage 1 trains a position head, stage 2 injects tracers into the diffusion transformer" loading="lazy">
 </section>
 
