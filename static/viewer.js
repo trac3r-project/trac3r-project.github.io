@@ -94,6 +94,9 @@ function free(g) { if (g) { gl.deleteVertexArray(g.vao); g.bufs.forEach(b => gl.
 let cases = [], cur = null, gpu = {}, token = 0, cam = null, spin = false, dirty = true, active = false, visible = false;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FOV = 0.6;
+// Observed points drawn (the files hold more, in random order): per object of a scene, for a single object, size in px.
+const PTS_SCENE = 120, PTS_OBJ = 800, PT_SIZE = 1.6;
+const nPoints = c => c.n_obj > 1 ? PTS_SCENE * c.n_obj : PTS_OBJ;
 function resetView() {
   const d = cur.cam.map((v, i) => v - cur.center[i]), l = Math.hypot(...d);
   cam = {yaw: Math.atan2(d[1], d[0]), pitch: Math.max(0.12, Math.min(1.2, Math.asin(d[2] / l))), zoom: 1};
@@ -109,7 +112,7 @@ async function load(c) {
   document.querySelectorAll(".tag").forEach(t => {
     const m = c.methods[t.dataset.m], b = document.createElement("b");
     b.textContent = NAME[t.dataset.m];
-    t.replaceChildren(b, `CD ${m.cd.toFixed(1)} ${c.unit} · ${m.sec.toFixed(1)} s / object`);
+    t.replaceChildren(b, `CD ${m.cd.toFixed(1)} ${c.unit}`, document.createElement("br"), `${m.sec.toFixed(1)} s / object`);
   });
   resetView(); msg.textContent = "Loading…";
   try {
@@ -140,7 +143,7 @@ function draw() {
   gl.enable(gl.DEPTH_TEST); gl.useProgram(pr);
   const w = W >> 1, h = H >> 1, [V, P] = matrices(w / h);
   gl.uniformMatrix4fv(U.V, false, V); gl.uniformMatrix4fv(U.P, false, P);
-  gl.uniform1f(U.ps, (w < 500 ? 1.5 : 2) * dpr);
+  gl.uniform1f(U.ps, PT_SIZE * dpr);
   M.forEach((k, i) => {
     gl.viewport((i % 2) * w, i < 2 ? h : 0, w, h);
     const g = gpu[k];
@@ -150,7 +153,7 @@ function draw() {
     }
     if (gpu.points && $("t-pts").checked) {
       gl.uniform1f(U.pts, 1); gl.uniform3f(U.flat_, .14, .36, .84);
-      gl.bindVertexArray(gpu.points.vao); gl.drawArrays(gl.POINTS, 0, gpu.points.n);
+      gl.bindVertexArray(gpu.points.vao); gl.drawArrays(gl.POINTS, 0, Math.min(gpu.points.n, nPoints(cur)));
     }
   });
   gl.bindVertexArray(null);
