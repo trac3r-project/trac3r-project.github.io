@@ -95,7 +95,7 @@ let cases = [], cur = null, gpu = {}, token = 0, cam = null, spin = false, dirty
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FOV = 0.6;
 // Observed points drawn (the files hold more, in random order): per object of a scene, for a single object, size in px.
-const PTS_SCENE = 120, PTS_OBJ = 800, PT_SIZE = 1.6;
+const PTS_SCENE = 600, PTS_OBJ = 4096, PT_SIZE_SCENE = 1, PT_SIZE_OBJ = 1.6;
 const nPoints = c => c.n_obj > 1 ? PTS_SCENE * c.n_obj : PTS_OBJ;
 function resetView() {
   const d = cur.cam.map((v, i) => v - cur.center[i]), l = Math.hypot(...d);
@@ -143,7 +143,7 @@ function draw() {
   gl.enable(gl.DEPTH_TEST); gl.useProgram(pr);
   const w = W >> 1, h = H >> 1, [V, P] = matrices(w / h);
   gl.uniformMatrix4fv(U.V, false, V); gl.uniformMatrix4fv(U.P, false, P);
-  gl.uniform1f(U.ps, PT_SIZE * dpr);
+  gl.uniform1f(U.ps, (cur.n_obj > 1 ? PT_SIZE_SCENE : PT_SIZE_OBJ) * dpr);
   M.forEach((k, i) => {
     gl.viewport((i % 2) * w, i < 2 ? h : 0, w, h);
     const g = gpu[k];

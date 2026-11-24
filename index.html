@@ -17,15 +17,14 @@
 <body>
 <header class="wrap">
   <h1><span class="name">Trac3R</span>Pose-Grounded 3D Object Generative Reconstruction via Point Tracing</h1>
-  <p class="authors"><span>Minghan Zhu<sup>1</sup></span><span>Michael Posa<sup>2</sup></span></p>
+  <p class="authors"><span>Minghan Zhu<sup>1,2</sup></span><span>Michael Posa<sup>2</sup></span></p>
   <p class="affil"><sup>1</sup>University of Michigan &emsp; <sup>2</sup>University of Pennsylvania</p>
   <!-- LAUNCH: replace each span.btn.off by <a class="btn" href="..."> -->
   <nav class="links">
     <span class="btn off">arXiv (soon)</span>
     <span class="btn off">Code (soon)</span>
-    <a class="btn" href="static/video/demo.mp4" target="_blank" rel="noopener">Video</a>
-    <!-- LAUNCH: optionally point Video to YouTube -->
     <a class="btn" href="#results">Interactive results</a>
+    <a class="btn" href="#method">Method overview</a>
   </nav>
 </header>
 
@@ -62,8 +61,8 @@
   <div class="two">
     <img src="static/img/acc_runtime.png" alt="Mean Chamfer distance against runtime per object; Trac3R is at the lower left" loading="lazy">
     <div>
-      <p>On synthetic objects, Trac3R has both high accuracy and the lowest runtime of the compared methods. Its accuracy changes little when predicted depth replaces ground-truth depth.</p>
-      <p>The same single model also handles real household objects with predicted depth, cluttered tabletops and bins with sensor depth, and indoor and outdoor scenes.</p>
+      <p>Trac3R has both high accuracy and the lowest runtime of the compared methods. </p>
+      <p>On the left is performance on synthetic objects. The same model also handles real household objects with predicted depth, cluttered tabletops and bins with sensor depth, and indoor and outdoor scenes.</p>
       <p class="note">Vertical axis: Chamfer distance (CD) of the posed shape in % of the object's longest side, averaged over Toys4K, GSO and OmniObject3D with ground-truth and MoGe-2 depth. Horizontal axis: seconds per object at batch size 1.</p>
     </div>
   </div>
@@ -76,9 +75,9 @@
     <li><h3>Tokens that know their position</h3>
       <p>A shape is a set of latent tokens, and each token originates from one point on the surface. We <b>fine-tune</b> the shape VAE so that a small position head can <b>read that point back</b> from the token.</p></li>
     <li><h3>Tracing observed points</h3>
-      <p>We encode sampled points of the observation into tokens of the same latent space: the <b>tracers</b>. Each tracer is added to one noisy shape token throughout denoising. That shape token is now a <b>traced token</b>: it is generated to stand for the tracer's point on the complete shape.</p></li>
+      <p>We encode observed points into tokens of the same latent space: the <b>tracers</b>. Each tracer is added to one noisy shape token throughout denoising. That shape token is now a <b>traced token</b>: it is generated to stand for the tracer's point on the complete shape.</p></li>
     <li><h3>Pose from the traced tokens</h3>
-      <p>The position head reads a point on the generated shape from each traced token, which pairs with the observed point of its tracer. The pose is solved with a <b>least-squares fit</b> to these pairs, in closed form.</p></li>
+      <p>Each traced token decodes to a point on the generated shape, which corresponds to the observed point of its tracer. The pose is solved with a <b>least-squares fit</b> to these pairs, in closed form.</p></li>
   </ol>
   <video class="media" controls muted loop playsinline preload="none" poster="static/video/method.jpg" src="static/video/method.mp4"></video>
   <img class="media plain" src="static/img/method.png" alt="Trac3R method overview: stage 1 trains a position head, stage 2 injects tracers into the diffusion transformer" loading="lazy">
