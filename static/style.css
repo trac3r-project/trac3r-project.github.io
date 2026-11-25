@@ -7,6 +7,7 @@ section.wrap{margin-top:56px}
 header{text-align:center;padding-top:56px!important}
 h1{font-size:clamp(22px,3.2vw,32px);line-height:1.25;font-weight:500;margin:0 auto;max-width:860px;text-wrap:balance}
 h1 .name{display:block;width:clamp(240px,42vw,440px);height:auto;margin:0 auto 18px}
+h1 .name.autodark{color:#ecebe9}
 .authors{margin:22px 0 2px;font-size:19px}.authors span{margin:0 14px}
 .affil{margin:0;color:var(--mute)}
 .links{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
